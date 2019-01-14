@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++  -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/deeplearning.dir/main.cpp.o CMakeFiles/deeplearning.dir/src/linalg/matrix.cpp.o  -o deeplearning 
