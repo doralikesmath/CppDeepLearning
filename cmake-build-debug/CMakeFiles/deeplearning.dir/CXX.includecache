@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/lap00704/Documents/Deep-Learning/main.cpp
+iostream
+-
+src/include/matrix.h
+/Users/lap00704/Documents/Deep-Learning/src/include/matrix.h
+
+/Users/lap00704/Documents/Deep-Learning/src/include/matrix.h
+vector
+-
+type_traits
+-
+
