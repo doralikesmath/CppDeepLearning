@@ -13,4 +13,4 @@ ENDFOREACH()
 file(GLOB SOURCES "src/models/*.cpp")
 file(GLOB SOURCES "src/utils/*.cpp")
 
-add_executable(deeplearning main.cpp src/linalg/matrix.cpp)
+add_executable(deeplearning main.cpp)
