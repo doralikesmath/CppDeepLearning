@@ -11,27 +11,35 @@
                                 ║          `--------'`---' `----''     ©2019  ║
                                 ╚═════════════════════════════════════════════╝
  */
+#include <cmath>
+#include <vector>
 
-#include <iostream>
-#include "src/include/maths/matrix.h"
-#include "src/include/maths/utils.h"
-#include "src/include/maths/losses.h"
-#include "src/include/maths/stats.h"
+#ifndef DEEPLEARNING_STATS_H
+#define DEEPLEARNING_STATS_H
 
-int main(){
-    std::vector <double> vec = {1, 2, 3, 4, 5, 10};
-    std::cout << "The mean of vec is " << stats::mean(vec) << std::endl;
-    std::cout << "The variance of vec is " << stats::variance(vec) << std::endl;
-
-    std::cout << "The l2 norm of the vector is " << maths::l2_norm(vec) << std::endl;
-    std::vector <double> sm = maths::softmax(vec);
-    for (int i = 0; i < sm.size(); i++){
-        std::cout << "sm[" << i << "] = " << sm[i] << std::endl;
+namespace stats{
+    template <typename Type>
+    double mean(const std::vector<Type> &vec){
+        double result = (double)vec[0];
+        for (long i = 1; i < vec.size(); i++){
+            result = (i * result + vec[i]) / (i + 1);
+        }
+        return result;
     }
-    LinAlg::Matrix<int> M({{1,2,3}, {2,4,5}});
-    std::cout << M;
-    std::cout << "Squared error = " << loss::squared_loss(M(0), M(1)) << std::endl;
-    std::cout << "Mean squared error = " << loss::mean_squared_error(M(0), M(1)) << std::endl;
-    std::cout << M.reshape(6, 1).transpose();
-    return 0;
+
+    template <typename Type>
+    double variance(const std::vector<Type> &vec){
+        double m = mean(vec);
+        double result = pow(vec[0] - m, 2);
+        for (long i = 1; i < vec.size(); i++){
+            result = (i * result + pow(vec[i] - m, 2)) / (i + 1);
+        }
+        return result;
+    }
+
+    template <typename Type>
+    double standard_deviation(const std::vector<Type> &vec){
+        return sqrt(variance(vec));
+    }
 }
+#endif //DEEPLEARNING_STATS_H
