@@ -11,12 +11,12 @@
                                 ║          `--------'`---' `----''     ©2019  ║
                                 ╚═════════════════════════════════════════════╝
  */
-
-#ifndef DEEPLEARNING_LOSSES_H
-#define DEEPLEARNING_LOSSES_H
 #include <vector>
 #include <cmath>
 #include <cassert>
+
+#ifndef DEEPLEARNING_LOSSES_H
+#define DEEPLEARNING_LOSSES_H
 
 namespace loss{
     template <typename Type>

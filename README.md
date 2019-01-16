@@ -10,7 +10,7 @@ Deep Learning from scratch with C++ with some support for parallel computing usi
     
         git clone git@github.com:doralikesmath/Deep-Learning.git
         
-3. Create a build folder
+3. Create the `build` folder
 
         cd Deep-Learning
         mkdir build

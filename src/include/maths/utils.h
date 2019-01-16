@@ -11,11 +11,11 @@
                                 ║          `--------'`---' `----''     ©2019  ║
                                 ╚═════════════════════════════════════════════╝
  */
+#include <vector>
+#include <cmath>
 
 #ifndef DEEPLEARNING_UTILS_H
 #define DEEPLEARNING_UTILS_H
-#include <vector>
-#include <cmath>
 
 namespace maths{
     template <typename Type>
@@ -73,22 +73,6 @@ namespace maths{
         }
         return min_index;
     };
-
-    double sigmoid(double x){
-        return 1 / (1 + exp(x));
-    }
-
-    double tanh(double x){
-        return (exp(x) - 1) / (exp(x) + 1);
-    }
-
-    double hard_tanh(double x){
-        return max(min(x, 1.0), -1.0);
-    }
-
-    double ReLU(double x){
-        return max(x, 0.0);
-    }
 
     template <typename Type>
     std::vector<double> softmax(const std::vector<Type> &vec){
