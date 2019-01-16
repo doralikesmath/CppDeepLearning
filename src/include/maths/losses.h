@@ -16,6 +16,7 @@
 #define DEEPLEARNING_LOSSES_H
 #include <vector>
 #include <cmath>
+#include <cassert>
 
 namespace loss{
     template <typename Type>
