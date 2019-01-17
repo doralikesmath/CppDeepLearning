@@ -128,7 +128,7 @@ int main(){
         weights.push_back(unif(re));
     }
 
-    fit(0.3, 0.05, 1000000);
+    fit(0.3, 0.05, 2000000);
 
     std::cout << "0 XOR 0 is " << predict(0, 0) << std::endl;
     std::cout << "0 XOR 1 is " << predict(0, 1) << std::endl;

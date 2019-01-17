@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
+#[[
 set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/7.0.1/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/local/Cellar/llvm/7.0.1/bin/clang++")
 set(OPENMP_LIBRARIES "/usr/local/Cellar/llvm/7.0.1/lib")
@@ -35,6 +36,7 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     # set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif(OPENMP_FOUND)
+]]
 
 project(DeepLearning)
 set (DeepLearning_VERSION_MAJOR 0)
@@ -51,5 +53,5 @@ ENDFOREACH()
 
 # file(GLOB SOURCES "src/models/*.cpp")
 # file(GLOB SOURCES "src/utils/*.cpp")
-target_link_libraries(OpenMP::OpenMP_CXX)
+# target_link_libraries(OpenMP::OpenMP_CXX)
 add_executable(deeplearning examples/xornn.cpp)
