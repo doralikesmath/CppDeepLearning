@@ -39,8 +39,8 @@
  * values[2:4] : the hidden values
  * values[5] : the output value
  */
-const std::vector<std::vector<int>> TRAINING_SET = {{0 ,0}, {1, 0}, {0, 1}, {1, 1}};
-const std::vector <double > LABELS = {0, 1, 1, 0};
+std::vector<std::vector<int>> TRAINING_SET = {{0 ,0}, {1, 0}, {0, 1}, {1, 1}};
+std::vector <double > LABELS = {0, 1, 1, 0};
 std::vector<double> values =  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 std::vector<double> weights;
 std::vector<double> derivatives = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
@@ -66,7 +66,7 @@ void backward_pass(double expected){
     derivatives[8] = temp * values[4];
 }
 
-void fit(double learning_rate, double normalization, int epochs){
+void fit(double learning_rate, double normalizer, int epochs){
     std::cout << "================================ Training Started ==============================" << std::endl;
     clock_t t;
     t = clock();
@@ -98,7 +98,7 @@ void fit(double learning_rate, double normalization, int epochs){
             // updating the weights
             #pragma omp parallel for
             for (int k = 0; k < 9; k++){
-                weights[k] = weights[k] - learning_rate * derivatives[k];
+                weights[k] = weights[k] * (1- learning_rate * normalizer) - learning_rate * derivatives[k];
             }
         }
         /*
@@ -128,11 +128,33 @@ int main(){
         weights.push_back(unif(re));
     }
 
-    fit(0.3, 0.05, 2000000);
+    // training
+    fit(0.3, 0, 2000000);
 
+    // predict the outcomes
     std::cout << "0 XOR 0 is " << predict(0, 0) << std::endl;
     std::cout << "0 XOR 1 is " << predict(0, 1) << std::endl;
     std::cout << "1 XOR 0 is " << predict(1, 0) << std::endl;
     std::cout << "1 XOR 1 is " << predict(1, 1) << std::endl;
+
+    // Now we will show a rather stupid example, using a similar constructed network for the AND function
+    // set the training set and labels again
+    std::cout << std::endl;
+    TRAINING_SET = {{0 ,0}, {1, 0}, {0, 1}, {1, 1}};
+    LABELS = {0, 0, 0, 1};
+    // re-initialize the weights
+    for (int i = 0; i < 9; i++){
+        weights.push_back(unif(re));
+    }
+
+    // training
+    fit(0.3, 0, 2000000);
+
+    // predict the outcomes
+    std::cout << "0 AND 0 is " << predict(0, 0) << std::endl;
+    std::cout << "0 AND 1 is " << predict(0, 1) << std::endl;
+    std::cout << "1 AND 0 is " << predict(1, 0) << std::endl;
+    std::cout << "1 AND 1 is " << predict(1, 1) << std::endl;
+
     return 0;
 }

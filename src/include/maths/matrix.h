@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <cmath>
 #include <cassert>
+#include <random>
 
 #ifndef DEEPLEARNING_MATRIX_H
 #define DEEPLEARNING_MATRIX_H
@@ -29,6 +30,7 @@ namespace LinAlg{
             //constructors
             Matrix(const std::vector < std::vector <Type> > &M);
             Matrix(const long &number_of_rows, const long &number_of_cols, const Type &init_value);
+            Matrix(const long &number_of_rows, const long &number_of_cols, const Type &lower_bound, const Type &upper_bound);
             Matrix(const char &c, const long &dimension);
             // the transpose
             Matrix transpose();
@@ -124,6 +126,20 @@ LinAlg::Matrix<Type>::Matrix(const char &c, const long &dimension){
             this->M[i][i] = 1;
         }
     }
+}
+
+template <typename Type>
+LinAlg::Matrix<Type>::Matrix(const long &number_of_rows, const long &number_of_cols, const Type &lower_bound, const Type &upper_bound){
+    std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
+    std::default_random_engine re;
+    this->M =  std::vector<std::vector<Type>>(number_of_rows, std::vector<Type> (number_of_cols));
+    for (long i = 0; i < number_of_rows; i++){
+        for (long j = 0; j < number_of_cols; j++){
+            this->M[i][j] = unif(re);
+        }
+    }
+    this->shape[0] = number_of_rows;
+    this->shape[1] = number_of_cols;
 }
 
 // returns the transpose of the matrix
