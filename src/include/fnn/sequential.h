@@ -23,8 +23,8 @@
 #include "../maths/utils.h"
 #include "../maths/activations.h"
 #include "layer.h"
-#ifndef DEEPLEARNING_NETWORK_H
-#define DEEPLEARNING_NETWORK_H
+#ifndef DEEPLEARNING_SEQUENTIAL_H
+#define DEEPLEARNING_SEQUENTIAL_H
 
 namespace NeuralNetwork{
     class Sequential{
@@ -33,10 +33,10 @@ namespace NeuralNetwork{
         bool compiled = false;
         int number_of_epochs;
         std::vector<int> params;
-        std::vector<Layer> layers;
         int number_of_layers;
-        std::vector<std::string> activations;
     public:
+        std::vector<Layer> layers;
+        std::vector<std::string> activations;
         Sequential();
         Sequential(std::vector<int> params);
         Sequential(int input_size);
@@ -46,6 +46,8 @@ namespace NeuralNetwork{
         void back_propagation();
         void fit();
         void summarize();
+        void print_weights(int layer);
+        void print_values(int layer);
         std::vector<double> predict();
         void save_model(std::string filename);
         void load_model(std::string filename);
@@ -80,6 +82,25 @@ void NeuralNetwork::Sequential::compile() {
 }
 
 void NeuralNetwork::Sequential::forward_pass() {
+    for (int i = 1; i< this->number_of_layers; i++){
+        this->layers[i].values = this->layers[i-1].weights.transpose() * this->layers[i-1].values;
+        this->layers[i].activate();
+    }
+}
+
+void NeuralNetwork::Sequential::print_weights(int layer) {
+    std::cout << "============================================" << std::endl;
+    std::cout << "The weights in layer " << layer << " : " << std::endl;
+    std::cout << this->layers[layer].weights << std::endl;
+}
+
+void NeuralNetwork::Sequential::print_values(int layer) {
+    std::cout << "============================================" << std::endl;
+    std::cout << "The values in layers " << layer << " : " << std::endl;
+    for (int i = 0; i < this->layers[layer].values.size(); i++){
+        std::cout << this->layers[layer].values[i] << " ";
+    }
+    std::cout << std::endl;
 }
 
 void NeuralNetwork::Sequential::back_propagation() {
@@ -89,7 +110,7 @@ void NeuralNetwork::Sequential::back_propagation() {
 void NeuralNetwork::Sequential::fit() {
 
 }
-    `
+
 void NeuralNetwork::Sequential::summarize() {
     if (this->compiled) {
         std::cout << "================ Summarize ================" << std::endl;
@@ -105,8 +126,6 @@ void NeuralNetwork::Sequential::summarize() {
         param -= this->layers[this->number_of_layers-1].weights.shape[0] * this->layers[this->number_of_layers-1].weights.shape[1];
         std::cout << "============================================" << std::endl;
         std::cout << "Total number of parameters: " << param << std::endl;
-        std::cout << "============================================" << std::endl;
-        std::cout << this->layers[0].weights << std::endl;
     } else{
         std::cout << "The model needs to be compiled first." << std::endl;
     }

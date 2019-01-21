@@ -39,7 +39,8 @@ namespace LinAlg{
             // the inverse matrix
             Matrix inverse();
             // access individual element (i, j)
-            Type operator () (const long &row, const long &column);
+            inline Type operator () (const long &row, const long &column) const;
+            inline Type & operator () (const long &row, const long &column);
             // access the row (i)
             std::vector <Type> operator() (const long &row);
             // apply a function to every element of the matrix
@@ -82,6 +83,8 @@ namespace LinAlg{
     Matrix <Type> operator * (const double &c, const Matrix <Type> &first_matrix);
     template <typename Type>
     Matrix <Type> operator * (const Matrix <Type> &first_matrix, const Matrix <Type> &second_matrix);
+    template <typename Type>
+    std::vector <Type> operator * (const Matrix <Type> &first_matrix, const std::vector <Type> &second_matrix);
 
 }
 
@@ -242,9 +245,30 @@ LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix
     return LinAlg::Matrix<Type>(result);
 }
 
+// overloading the * operator
+template <typename Type>
+std::vector<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix, const std::vector<Type> &second_matrix){
+    assert(first_matrix.shape[1] == second_matrix.size());
+    std::vector<Type> result(first_matrix.shape[0]);
+#pragma omp parallel for
+    for (long i = 0; i < first_matrix.shape[0]; i++){
+#pragma omp parallel for
+            for (long k = 0; k < first_matrix.shape[1]; k++){
+                result[i] += first_matrix.M[i][k] * second_matrix[k];
+            }
+        }
+    return result;
+}
+
 // access individual entry
 template <typename Type>
-Type LinAlg::Matrix<Type>::operator()(const long &row, const long &column){
+inline Type LinAlg::Matrix<Type>::operator()(const long &row, const long &column) const{
+    return (this->M[row][column]);
+}
+
+// access individual entry
+template <typename Type>
+inline Type & LinAlg::Matrix<Type>::operator()(const long &row, const long &column){
     return this->M[row][column];
 }
 

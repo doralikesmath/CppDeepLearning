@@ -13,6 +13,9 @@
  */
 
 #include "../src/include/fnn/sequential.h"
+#include "../src/include/maths/matrix.h"
+#include <vector>
+#include <iostream>
 
 int main(){
     NeuralNetwork::Sequential nn;
@@ -21,6 +24,10 @@ int main(){
     nn.add_layer(3);
     nn.add_layer(1);
     nn.compile();
+    nn.layers[0].values = {1, 1};
     nn.summarize();
+    nn.print_values(1);
+    nn.forward_pass();
+    nn.print_values(1);
     return 0;
 }

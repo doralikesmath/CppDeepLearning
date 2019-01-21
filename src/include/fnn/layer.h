@@ -35,6 +35,7 @@ namespace NeuralNetwork{
         void lock();
         void unlock();
         void print();
+        void activate();
     };
 }
 
@@ -49,6 +50,30 @@ NeuralNetwork::Layer::Layer(long row, long col, double lower_bound, double upper
         derivatives(row, col, 1){
     this->values = std::vector<double> (row, 0);
     this->activation = activation;
+}
+
+void NeuralNetwork::Layer::activate() {
+    if (this->activation == "relu" || this->activation == "ReLU"){
+        for (int i = 0; i < this->values.size(); i++){
+            this->values[i] = activations::ReLU(this->values[i]);
+        }
+    } else if (this->activation == "sigmoid") {
+        for (int i = 0; i < this->values.size(); i++) {
+            this->values[i] = activations::sigmoid(this->values[i]);
+        }
+    } else if (this->activation == "tanh") {
+        for (int i = 0; i < this->values.size(); i++) {
+            this->values[i] = activations::tanh(this->values[i]);
+        }
+    } else if (this->activation == "softmax") {
+        double sum_exp = 0;
+        for (int i = 0; i < this->values.size(); i++) {
+            sum_exp += exp(this->values[i]);
+        }
+        for (int i = 0; i < this->values.size(); i++) {
+            this->values[i] /= sum_exp;
+        }
+    }
 }
 
 #endif //DEEPLEARNING_LAYER_H
