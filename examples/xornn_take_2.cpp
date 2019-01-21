@@ -24,7 +24,7 @@ int main(){
     nn.add_layer(3);
     nn.add_layer(1);
     nn.compile();
-    nn.layers[0].values = {1, 1};
+    nn.layers[0].pre_activate = {1, 1};
     nn.summarize();
     nn.print_values(1);
     nn.forward_pass();

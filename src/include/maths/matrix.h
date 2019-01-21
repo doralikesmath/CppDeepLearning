@@ -47,7 +47,6 @@ namespace LinAlg{
             Matrix apply_function(Type (*function)(Type));
             Matrix reshape(const long &number_of_rows, const long &number_of_cols);
             // print the matrix
-            void print();
             friend std::ostream &operator << (std::ostream &os, const Matrix<Type> &M) {
                 long m = M.shape[0];
                 long n = M.shape[1];
@@ -161,13 +160,6 @@ LinAlg::Matrix<Type> LinAlg::Matrix<Type>::transpose(){
     return LinAlg::Matrix<Type>(N);
 }
 
-// print out the matrix with some padding space
-template <typename Type>
-void LinAlg::Matrix<Type>::print(){
-    std::cout << M << std::endl;
-}
-
-
 // overloading the + operator
 template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator+ (const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
@@ -238,7 +230,6 @@ LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix
             #pragma omp parallel for
             for (long k = 0; k < first_matrix.shape[1]; k++){
                 result[i][j] += first_matrix.M[i][k] * second_matrix.M[k][j];
-                // std::cout << "i = " << i << "j = " << j << "result[i,j]" << result[i][j] << std::endl;
             }
         }
     }

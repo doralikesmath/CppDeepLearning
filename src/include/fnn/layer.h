@@ -28,7 +28,8 @@ namespace NeuralNetwork{
     public:
         std::string activation;
         LinAlg::Matrix<double> weights;
-        std::vector <double> values;
+        std::vector <double> pre_activate;
+        std::vector <double> post_activate;
         LinAlg::Matrix<double> derivatives;
         // constructor
         Layer(long row, long col, double lower_bound, double upper_bound, const std::string &activation = "identity");
@@ -48,30 +49,32 @@ void NeuralNetwork::Layer::print() {
 NeuralNetwork::Layer::Layer(long row, long col, double lower_bound, double upper_bound, const std::string &activation):
         weights(row, col, lower_bound, upper_bound),
         derivatives(row, col, 1){
-    this->values = std::vector<double> (row, 0);
+    this->pre_activate = std::vector<double> (row, 0);
+    this->post_activate = std::vector<double> (row, 0);
+    this->weights = LinAlg::Matrix<double> (row, col, lower_bound, upper_bound);
     this->activation = activation;
 }
 
 void NeuralNetwork::Layer::activate() {
     if (this->activation == "relu" || this->activation == "ReLU"){
-        for (int i = 0; i < this->values.size(); i++){
-            this->values[i] = activations::ReLU(this->values[i]);
+        for (int i = 0; i < this->pre_activate.size(); i++){
+            this->post_activate[i] = activations::ReLU(this->pre_activate[i]);
         }
     } else if (this->activation == "sigmoid") {
-        for (int i = 0; i < this->values.size(); i++) {
-            this->values[i] = activations::sigmoid(this->values[i]);
+        for (int i = 0; i < this->pre_activate.size(); i++) {
+            this->post_activate[i] = activations::sigmoid(this->pre_activate[i]);
         }
     } else if (this->activation == "tanh") {
-        for (int i = 0; i < this->values.size(); i++) {
-            this->values[i] = activations::tanh(this->values[i]);
+        for (int i = 0; i < this->pre_activate.size(); i++) {
+            this->post_activate[i] = activations::tanh(this->pre_activate[i]);
         }
     } else if (this->activation == "softmax") {
         double sum_exp = 0;
-        for (int i = 0; i < this->values.size(); i++) {
-            sum_exp += exp(this->values[i]);
+        for (int i = 0; i < this->pre_activate.size(); i++) {
+            sum_exp += exp(this->pre_activate[i]);
         }
-        for (int i = 0; i < this->values.size(); i++) {
-            this->values[i] /= sum_exp;
+        for (int i = 0; i < this->pre_activate.size(); i++) {
+            this->post_activate[i] = exp(this->pre_activate[i]) / sum_exp;
         }
     }
 }

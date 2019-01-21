@@ -83,7 +83,7 @@ void NeuralNetwork::Sequential::compile() {
 
 void NeuralNetwork::Sequential::forward_pass() {
     for (int i = 1; i< this->number_of_layers; i++){
-        this->layers[i].values = this->layers[i-1].weights.transpose() * this->layers[i-1].values;
+        this->layers[i].pre_activate = this->layers[i-1].weights.transpose() * this->layers[i-1].pre_activate;
         this->layers[i].activate();
     }
 }
@@ -96,9 +96,14 @@ void NeuralNetwork::Sequential::print_weights(int layer) {
 
 void NeuralNetwork::Sequential::print_values(int layer) {
     std::cout << "============================================" << std::endl;
-    std::cout << "The values in layers " << layer << " : " << std::endl;
-    for (int i = 0; i < this->layers[layer].values.size(); i++){
-        std::cout << this->layers[layer].values[i] << " ";
+    std::cout << "The pre-activate values in layers " << layer << " : " << std::endl;
+    for (int i = 0; i < this->layers[layer].pre_activate.size(); i++){
+        std::cout << this->layers[layer].pre_activate[i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "The post-activate values in layers " << layer << " : " << std::endl;
+    for (int i = 0; i < this->layers[layer].post_activate.size(); i++){
+        std::cout << this->layers[layer].post_activate[i] << " ";
     }
     std::cout << std::endl;
 }
