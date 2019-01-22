@@ -18,16 +18,23 @@
 #include <iostream>
 
 int main(){
+    std::vector<std::vector<double>> TRAINING_SET = {{0 ,0}, {1, 0}, {0, 1}, {1, 1}};
+    std::vector <double > LABELS = {0, 1, 1, 0};
+
     NeuralNetwork::Sequential nn;
-    nn.add_layer(2, "sigmoid");
-    nn.add_layer(10, "tanh");
-    nn.add_layer(3);
+    nn.add_layer(2);
+    nn.add_layer(3, "sigmoid");
     nn.add_layer(1);
-    nn.compile();
-    nn.layers[0].pre_activate = {1, 1};
+    nn.compile(2000000, 0.25, "squared_error");
     nn.summarize();
-    nn.print_values(1);
-    nn.forward_pass();
-    nn.print_values(1);
+    nn.fit(TRAINING_SET, LABELS);
+    std::vector<double> results = nn.predict(std::vector<double>({0, 0}));
+    std::cout << "0 XOR 0 is " << results[0] << std::endl;
+    results = nn.predict(std::vector<double>({0, 1}));
+    std::cout << "0 XOR 1 is " << results[0] << std::endl;
+    results = nn.predict(std::vector<double>({1, 0}));
+    std::cout << "1 XOR 0 is " << results[0] << std::endl;
+    results = nn.predict(std::vector<double>({1, 1}));
+    std::cout << "1 XOR 1 is " << results[0] << std::endl;
     return 0;
 }

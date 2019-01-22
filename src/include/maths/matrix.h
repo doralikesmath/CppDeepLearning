@@ -27,25 +27,34 @@ namespace LinAlg{
         public:
             std::vector < std::vector<Type> > M;
             long shape[2];
+
             //constructors
             Matrix(const std::vector < std::vector <Type> > &M);
             Matrix(const long &number_of_rows, const long &number_of_cols, const Type &init_value);
             Matrix(const long &number_of_rows, const long &number_of_cols, const Type &lower_bound, const Type &upper_bound);
             Matrix(const char &c, const long &dimension);
+
             // the transpose
             Matrix transpose();
+
             // the determinant
             double det();
+
             // the inverse matrix
             Matrix inverse();
+
             // access individual element (i, j)
             inline Type operator () (const long &row, const long &column) const;
             inline Type & operator () (const long &row, const long &column);
+
             // access the row (i)
-            std::vector <Type> operator() (const long &row);
+            inline std::vector <Type> operator() (const long &row) const;
+            inline std::vector <Type> &operator() (const long &row);
+
             // apply a function to every element of the matrix
             Matrix apply_function(Type (*function)(Type));
             Matrix reshape(const long &number_of_rows, const long &number_of_cols);
+
             // print the matrix
             friend std::ostream &operator << (std::ostream &os, const Matrix<Type> &M) {
                 long m = M.shape[0];
@@ -72,6 +81,7 @@ namespace LinAlg{
                 return os;
             }
     };
+
     template <typename Type>
     Matrix <Type> operator + (const Matrix <Type> &first_matrix, const Matrix <Type> &second_matrix);
     template <typename Type>
@@ -84,7 +94,6 @@ namespace LinAlg{
     Matrix <Type> operator * (const Matrix <Type> &first_matrix, const Matrix <Type> &second_matrix);
     template <typename Type>
     std::vector <Type> operator * (const Matrix <Type> &first_matrix, const std::vector <Type> &second_matrix);
-
 }
 
 // verify if the input data is indeed a matrix
@@ -218,7 +227,7 @@ LinAlg::Matrix<Type> LinAlg::operator* (const double &c, const LinAlg::Matrix<Ty
     return LinAlg::Matrix<Type>(result);
 }
 
-// overloading the * operator
+// overloading the * operator between matrices
 template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
     assert(first_matrix.shape[1] == second_matrix.shape[0]);
@@ -236,7 +245,7 @@ LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix
     return LinAlg::Matrix<Type>(result);
 }
 
-// overloading the * operator
+// overloading the * operator between a matrix and a vector
 template <typename Type>
 std::vector<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix, const std::vector<Type> &second_matrix){
     assert(first_matrix.shape[1] == second_matrix.size());
@@ -265,7 +274,13 @@ inline Type & LinAlg::Matrix<Type>::operator()(const long &row, const long &colu
 
 // access individual row
 template <typename Type>
-std::vector<Type> LinAlg::Matrix<Type>::operator() (const long &row){
+inline std::vector<Type> LinAlg::Matrix<Type>::operator() (const long &row) const{
+    return this->M[row];
+}
+
+// access individual row
+template <typename Type>
+inline std::vector<Type> & LinAlg::Matrix<Type>::operator() (const long &row){
     return this->M[row];
 }
 

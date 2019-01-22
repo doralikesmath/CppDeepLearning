@@ -73,7 +73,7 @@ namespace activations{
         } else if (type == "sigmoid"){
             return sigmoid_derivative(x);
         } else{
-            return x;
+            return 1;
         }
     }
 

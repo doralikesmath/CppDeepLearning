@@ -30,7 +30,8 @@ namespace NeuralNetwork{
         LinAlg::Matrix<double> weights;
         std::vector <double> pre_activate;
         std::vector <double> post_activate;
-        LinAlg::Matrix<double> derivatives;
+        LinAlg::Matrix<double> weight_derivatives;
+        std::vector <double> value_derivatives;
         // constructor
         Layer(long row, long col, double lower_bound, double upper_bound, const std::string &activation = "identity");
         void lock();
@@ -48,9 +49,10 @@ void NeuralNetwork::Layer::print() {
 
 NeuralNetwork::Layer::Layer(long row, long col, double lower_bound, double upper_bound, const std::string &activation):
         weights(row, col, lower_bound, upper_bound),
-        derivatives(row, col, 1){
+        weight_derivatives(row, col, 1){
     this->pre_activate = std::vector<double> (row, 0);
     this->post_activate = std::vector<double> (row, 0);
+    this->value_derivatives = std::vector<double> (row, 1);
     this->weights = LinAlg::Matrix<double> (row, col, lower_bound, upper_bound);
     this->activation = activation;
 }
@@ -76,6 +78,8 @@ void NeuralNetwork::Layer::activate() {
         for (int i = 0; i < this->pre_activate.size(); i++) {
             this->post_activate[i] = exp(this->pre_activate[i]) / sum_exp;
         }
+    } else{
+        this->post_activate = this->pre_activate;  // the default activation is the identity map
     }
 }
 
