@@ -39,7 +39,7 @@ namespace NeuralNetwork{
         std::string loss;
 
         void forward_pass();
-        void back_propagate(double predicted, double expected);
+        void back_propagate(std::vector<double> expected);
         void update_weights();
     public:
         std::vector<Layer> layers;
@@ -50,7 +50,7 @@ namespace NeuralNetwork{
         void add_layer(int number_of_neuron, std::string activation = "identity");
         void compile(int number_of_epochs = 100000, double learning_rate = 0.5, std::string loss = "squared_error");
         template <typename Type>
-        void fit(std::vector<std::vector<Type>> X, std::vector<Type> y);
+        void fit(std::vector<std::vector<Type>> X, std::vector<std::vector<Type>> y);
         void summarize();
         void print_weights(int layer);
         void print_values(int layer);
@@ -94,6 +94,7 @@ void NeuralNetwork::Sequential::compile(int number_of_epochs, double learning_ra
 
 void NeuralNetwork::Sequential::forward_pass() {
     this->layers[0].activate();
+#pragma omp parallel for
     for (int i = 1; i < this->number_of_layers; i++){
         this->layers[i].pre_activate = this->layers[i-1].weights.transpose() * this->layers[i-1].post_activate;
         this->layers[i].activate();
@@ -101,8 +102,11 @@ void NeuralNetwork::Sequential::forward_pass() {
 }
 
 void NeuralNetwork::Sequential::update_weights() {
+#pragma omp parallel for
     for (int i = 0; i < this->number_of_layers; i++){
+#pragma omp parallel for
         for (int j = 0; j < this->layers[i].weights.shape[0]; j++){
+#pragma omp parallel for
             for (int k = 0; k < this -> layers[i].weights.shape[1]; k++){
                 this->layers[i].weights(j, k) -= this->learning_rate * this->layers[i].weight_derivatives(j, k);
             }
@@ -110,28 +114,37 @@ void NeuralNetwork::Sequential::update_weights() {
     }
 }
 
-void NeuralNetwork::Sequential::back_propagate(double predicted, double expected) {
+void NeuralNetwork::Sequential::back_propagate(std::vector<double> expected) {
     double temp;
     int n = this->number_of_layers - 1;
     if (this->loss == "squared_error"){
-        this->layers[n].value_derivatives[0] = (predicted - expected) *
-                activations::activation_derivative(this->layers[n].post_activate[0],
-                        this->layers[n].activation);
-    }
-    for (int i = n - 1; i >= 0; i--){
-        for (int j = 0; j < this->layers[i].value_derivatives.size(); j++){
-            temp = 0;
-            // the dot product of 2 vectors, really
-            for (int k = 0; k < this->layers[i+1].value_derivatives.size(); k++){
-                temp += this->layers[i].weights(j, k) * this->layers[i+1].value_derivatives[k];
-            }
-            this->layers[i].value_derivatives[j] = temp *
-                    activations::activation_derivative(this->layers[i].pre_activate[j], this->layers[i].activation);
+#pragma omp parallel for
+        for (int i = 0; i < this->layers[n].value_derivatives.size(); i++){
+            this->layers[n].value_derivatives[i] =
+                    (this->layers[this->number_of_layers - 1].post_activate[i] - expected[i]) *
+                    this->layers[n].activate_derivative(i);
         }
     }
 
+#pragma omp parallel for
+    for (int i = n - 1; i >= 0; i--){
+#pragma omp parallel for
+        for (int j = 0; j < this->layers[i].value_derivatives.size(); j++){
+            temp = 0;
+            // the dot product of 2 vectors, really
+#pragma omp parallel for
+            for (int k = 0; k < this->layers[i+1].value_derivatives.size(); k++){
+                temp += this->layers[i].weights(j, k) * this->layers[i+1].value_derivatives[k];
+            }
+            this->layers[i].value_derivatives[j] = temp * this->layers[i].activate_derivative(j);
+        }
+    }
+
+#pragma omp parallel for
     for (int i = 0; i < n; i++){
+#pragma omp parallel for
         for (int j = 0; j < this->layers[i].weights.shape[0]; j++){
+#pragma omp parallel for
             for (int k = 0; k < this->layers[i].weights.shape[1]; k++){
                 this->layers[i].weight_derivatives(j, k) = this->layers[i+1].value_derivatives[k] *
                         this->layers[i].post_activate[j];
@@ -143,21 +156,28 @@ void NeuralNetwork::Sequential::back_propagate(double predicted, double expected
 }
 
 template <typename Type>
-void NeuralNetwork::Sequential::fit(std::vector<std::vector<Type>> X, std::vector<Type> y) {
+void NeuralNetwork::Sequential::fit(std::vector<std::vector<Type>> X, std::vector<std::vector<Type>> y) {
+    std::cout << "================================ Training Started ==============================" << std::endl;
     clock_t t;
     t = clock();
     double avg_loss = 0;
     long count = 0;
 
+#pragma omp parallel for
     for (int i = 0; i < this->number_of_epochs; i++){
+#pragma omp parallel for
         for (int j = 0; j< X.size(); j++){
             count++;
             this->layers[0].pre_activate = X[j];
             this->forward_pass();
-            double predicted = this->layers[this->number_of_layers - 1].post_activate[0];
-            double loss = predicted - y[j];
+            std::vector<double> predicted = this->layers[this->number_of_layers - 1].post_activate;
+            double loss = 0;
+#pragma omp parallel for
+            for (int k = 0; k < y[j].size(); k++){
+                loss += pow(predicted[k] - y[j][k], 2);
+            }
             avg_loss = avg_loss * ((count - 1) / count) + loss * loss / count;
-            this->back_propagate(predicted, y[j]);
+            this->back_propagate(y[j]);
         }
     }
     t = clock() - t;
@@ -194,9 +214,9 @@ void NeuralNetwork::Sequential::print_values(int layer) {
 
 void NeuralNetwork::Sequential::summarize() {
     if (this->compiled) {
-        std::cout << "================ Summarize ================" << std::endl;
+        std::cout << "==================================== Summarize =================================" << std::endl;
         std::cout << "Number of layers: " << this->number_of_layers << std::endl;
-        std::cout << "============================================" << std::endl;
+        std::cout << "================================================================================" << std::endl;
         long param = 0;
         for (int i = 0; i < this->number_of_layers; i++) {
             std::cout << "Layer " << i << " - Size: " << this->layers[i].weights.shape[0] << " x "
@@ -205,7 +225,7 @@ void NeuralNetwork::Sequential::summarize() {
             param += this->layers[i].weights.shape[0] * this->layers[i].weights.shape[1];
         }
         param -= this->layers[this->number_of_layers-1].weights.shape[0] * this->layers[this->number_of_layers-1].weights.shape[1];
-        std::cout << "============================================" << std::endl;
+        std::cout << "================================================================================" << std::endl;
         std::cout << "Total number of parameters: " << param << std::endl;
     } else{
         std::cout << "The model needs to be compiled first." << std::endl;

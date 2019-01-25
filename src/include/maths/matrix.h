@@ -94,6 +94,8 @@ namespace LinAlg{
     Matrix <Type> operator * (const Matrix <Type> &first_matrix, const Matrix <Type> &second_matrix);
     template <typename Type>
     std::vector <Type> operator * (const Matrix <Type> &first_matrix, const std::vector <Type> &second_matrix);
+    template <typename Type>
+    Matrix <Type> hadamard_product (const Matrix <Type> &first_matrix, const Matrix <Type> &second_matrix);
 }
 
 // verify if the input data is indeed a matrix
@@ -101,7 +103,6 @@ template <typename Type>
 bool is_matrix(const std::vector < std::vector<Type> > &M){
     long m = M.size();
     long n = M[0].size();
-    #pragma omp parallel for
     for (long i = 0; i < m; i++){
         if (M[i].size() != n){
             return false;
@@ -194,6 +195,21 @@ LinAlg::Matrix<Type> LinAlg::operator- (const LinAlg::Matrix<Type> &first_matrix
         #pragma omp parallel for
         for (long j = 0; j < first_matrix.shape[1]; j++){
             result[i][j] -= second_matrix.M[i][j];
+        }
+    }
+    return LinAlg::Matrix<Type>(result);
+}
+
+// Hadamard product of two matrices
+template <typename Type>
+LinAlg::Matrix<Type> LinAlg::hadamard_product(const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
+    assert(first_matrix.shape[0] == second_matrix.shape[0] and first_matrix.shape[1] == second_matrix.shape[1]);
+    std::vector<std::vector<Type>> result = first_matrix.M;
+#pragma omp parallel for
+    for (long i = 0; i < first_matrix.shape[0]; i++){
+#pragma omp parallel for
+        for (long j = 0; j < first_matrix.shape[1]; j++){
+            result[i][j] *= second_matrix.M[i][j];
         }
     }
     return LinAlg::Matrix<Type>(result);
