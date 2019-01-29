@@ -5,12 +5,18 @@ Deep Learning from scratch with C++ with some support for parallel computing usi
 1. Clone this repository
 
         git clone git@github.com:doralikesmath/Deep-Learning.git
+        
+2. Create the `build` folder
 
-2. Create the `Makefile` using `CMake`
+        cd Deep-Learning
+        mkdir build
+        cd build
+
+3. Create the `Makefile` using `CMake`
 
         cmake .. -D CMAKE_CXX_COMPILER=clang++ - DCMAKE_C_COMPILER=clang
         
-3. Compile the test program
+4. Compile the test program
 
         make
 
