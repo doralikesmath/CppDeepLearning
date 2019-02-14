@@ -23,7 +23,7 @@ int main(){
 
     NeuralNetwork::Sequential nn;
     nn.add_layer(2);
-    nn.add_layer(3, "sigmoid");
+    nn.add_layer(4, "sigmoid");
     nn.add_layer(1);
     nn.compile(2000000, 0.3, "squared_error");
     nn.summarize();

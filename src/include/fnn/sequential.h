@@ -46,7 +46,6 @@ namespace NeuralNetwork{
         std::vector<std::string> activations;
         Sequential();
         Sequential(std::vector<int> params);
-        Sequential(int input_size);
         void add_layer(int number_of_neuron, std::string activation = "identity");
         void compile(int number_of_epochs = 100000, double learning_rate = 0.5, std::string loss = "squared_error");
         template <typename Type>
@@ -94,7 +93,7 @@ void NeuralNetwork::Sequential::compile(int number_of_epochs, double learning_ra
 
 void NeuralNetwork::Sequential::forward_pass() {
     this->layers[0].activate();
-#pragma omp parallel for
+// #pragma omp parallel for
     for (int i = 1; i < this->number_of_layers; i++){
         this->layers[i].pre_activate = this->layers[i-1].weights.transpose() * this->layers[i-1].post_activate;
         this->layers[i].activate();
@@ -102,11 +101,9 @@ void NeuralNetwork::Sequential::forward_pass() {
 }
 
 void NeuralNetwork::Sequential::update_weights() {
-#pragma omp parallel for
+// #pragma omp parallel for
     for (int i = 0; i < this->number_of_layers; i++){
-#pragma omp parallel for
         for (int j = 0; j < this->layers[i].weights.shape[0]; j++){
-#pragma omp parallel for
             for (int k = 0; k < this -> layers[i].weights.shape[1]; k++){
                 this->layers[i].weights(j, k) -= this->learning_rate * this->layers[i].weight_derivatives(j, k);
             }
@@ -126,13 +123,13 @@ void NeuralNetwork::Sequential::back_propagate(std::vector<double> expected) {
         }
     }
 
-#pragma omp parallel for
+// #pragma omp parallel for
     for (int i = n - 1; i >= 0; i--){
-#pragma omp parallel for
+// #pragma omp parallel for
         for (int j = 0; j < this->layers[i].value_derivatives.size(); j++){
             temp = 0;
             // the dot product of 2 vectors, really
-#pragma omp parallel for
+// #pragma omp parallel for
             for (int k = 0; k < this->layers[i+1].value_derivatives.size(); k++){
                 temp += this->layers[i].weights(j, k) * this->layers[i+1].value_derivatives[k];
             }
@@ -140,11 +137,9 @@ void NeuralNetwork::Sequential::back_propagate(std::vector<double> expected) {
         }
     }
 
-#pragma omp parallel for
+// #pragma omp parallel for
     for (int i = 0; i < n; i++){
-#pragma omp parallel for
         for (int j = 0; j < this->layers[i].weights.shape[0]; j++){
-#pragma omp parallel for
             for (int k = 0; k < this->layers[i].weights.shape[1]; k++){
                 this->layers[i].weight_derivatives(j, k) = this->layers[i+1].value_derivatives[k] *
                         this->layers[i].post_activate[j];
@@ -163,16 +158,14 @@ void NeuralNetwork::Sequential::fit(std::vector<std::vector<Type>> X, std::vecto
     double avg_loss = 0;
     long count = 0;
 
-#pragma omp parallel for
+// #pragma omp parallel for
     for (int i = 0; i < this->number_of_epochs; i++){
-#pragma omp parallel for
         for (int j = 0; j< X.size(); j++){
             count++;
             this->layers[0].pre_activate = X[j];
             this->forward_pass();
             std::vector<double> predicted = this->layers[this->number_of_layers - 1].post_activate;
             double loss = 0;
-#pragma omp parallel for
             for (int k = 0; k < y[j].size(); k++){
                 loss += pow(predicted[k] - y[j][k], 2);
             }
