@@ -1,4 +1,4 @@
-# Deep-Learning
+# CppDeepLearning
 Deep Learning from scratch with C++ with some support for parallel computing using OpenMP.
 
 ## To complie with Clang
