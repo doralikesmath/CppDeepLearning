@@ -10,6 +10,8 @@
                                 ║          |        ||   |\ `-'   /           ║
                                 ║          `--------'`---' `----''     ©2019  ║
                                 ╚═════════════════════════════════════════════╝
+ * This is an implementation of the k-mean and k-mean++ clustering algorithms
+ * For more information, please refer to http://ilpubs.stanford.edu:8090/778/1/2006-13.pdf
  */
 
 #ifndef DEEPLEARNING_KMEAN_H
