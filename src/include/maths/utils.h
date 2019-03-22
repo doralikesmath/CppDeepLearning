@@ -13,6 +13,7 @@
  */
 #include <vector>
 #include <cmath>
+#include <cassert>
 
 #ifndef DEEPLEARNING_UTILS_H
 #define DEEPLEARNING_UTILS_H
@@ -95,12 +96,40 @@ namespace maths{
     }
 
     template <typename Type>
-    double l2_norm(const std::vector<Type> &vec){
+    double l2_norm_squared(const std::vector<Type> &vec){
         double norm = 0;
         for (long i = 0; i < vec.size(); i++){
             norm += std::pow(vec[i], 2);
         }
-        return sqrt(norm);
+        return norm;
+    }
+
+    template <typename Type>
+    double l2_norm(const std::vector<Type> &vec){
+        return sqrt(l2_norm_squared(vec));
+    }
+
+    template <typename Type>
+    double distance_squared(const std::vector<Type> &x, const std::vector<Type> &y){
+        assert(x.size() == y.size());
+        double result = 0;
+        for (int i = 0; i < x.size(); i++){
+            result += std::pow(x[i] - y[i], 2);
+        }
+        return result;
+    }
+
+    template <typename Type>
+    double distance(const std::vector<Type> &x, const std::vector<Type> &y){
+        assert(x.size() == y.size());
+        return std::sqrt(distance_squared(x, y));
+    }
+
+    std::vector<bool> one_hot_encoding(u_long size, u_long label){
+        assert(label < size);
+        std::vector<bool> result(size, false);
+        result[label] = true;
+        return result;
     }
 }
 

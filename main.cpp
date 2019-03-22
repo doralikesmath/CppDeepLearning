@@ -16,7 +16,7 @@
 #include "src/include/maths/matrix.h"
 #include "src/include/maths/utils.h"
 #include "src/include/maths/losses.h"
-#include "src/include/maths/obsolete/stats.h"
+#include "src/include/maths/stats.h"
 
 int main(){
     std::vector <double> vec = {1, 2, 3, 4, 5, 10};

@@ -60,27 +60,22 @@ NeuralNetwork::Layer::Layer(long row, long col, double lower_bound, double upper
 
 void NeuralNetwork::Layer::activate() {
     if (this->activation == "relu" || this->activation == "ReLU"){
-#pragma omp parallel for
         for (int i = 0; i < this->pre_activate.size(); i++){
             this->post_activate[i] = activations::ReLU(this->pre_activate[i]);
         }
     } else if (this->activation == "sigmoid") {
-#pragma omp parallel for
         for (int i = 0; i < this->pre_activate.size(); i++) {
             this->post_activate[i] = activations::sigmoid(this->pre_activate[i]);
         }
     } else if (this->activation == "tanh") {
-#pragma omp parallel for
         for (int i = 0; i < this->pre_activate.size(); i++) {
             this->post_activate[i] = activations::tanh(this->pre_activate[i]);
         }
     } else if (this->activation == "softmax") {
         double sum_exp = 0;
-#pragma omp parallel for
         for (int i = 0; i < this->pre_activate.size(); i++) {
             sum_exp += exp(this->pre_activate[i]);
         }
-#pragma omp parallel for
         for (int i = 0; i < this->pre_activate.size(); i++) {
             this->post_activate[i] = exp(this->pre_activate[i]) / sum_exp;
         }

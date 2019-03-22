@@ -61,9 +61,9 @@ namespace LinAlg{
                 long n = M.shape[1];
 
                 short fixed_width = 5;
-                #pragma omp parallel for
+                // #pragma omp parallel for
                 for (long i = 0; i < m; i++){
-                    #pragma omp parallel for
+                    // #pragma omp parallel for
                     for (long j = 0; j < n - 1; j++){
                         short w = (short)log10(M.M[i][j]) + (short)3;
                         if (w > fixed_width){
@@ -133,7 +133,7 @@ LinAlg::Matrix<Type>::Matrix(const char &c, const long &dimension){
     this->shape[0] = dimension;
     this->shape[1] = dimension;
     if ((c == 'I') || (c == 'i')){
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (long i = 0; i < dimension; i++){
             this->M[i][i] = 1;
         }
@@ -158,10 +158,10 @@ LinAlg::Matrix<Type>::Matrix(const long &number_of_rows, const long &number_of_c
 template <typename Type>
 LinAlg::Matrix<Type> LinAlg::Matrix<Type>::transpose(){
     std::vector <std::vector <Type> > N;
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < this->shape[1]; i++){
         std::vector <Type> temp_row;
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (long j = 0; j < this->shape[0]; j++){
             temp_row.push_back(this->M[j][i]);
         }
@@ -175,9 +175,9 @@ template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator+ (const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
     assert(first_matrix.shape[0] == second_matrix.shape[0] and first_matrix.shape[1] == second_matrix.shape[1]);
     std::vector<std::vector<Type>> result = first_matrix.M;
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (long j = 0; j < first_matrix.shape[1]; j++){
             result[i][j] += second_matrix.M[i][j];
         }
@@ -190,9 +190,9 @@ template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator- (const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
     assert(first_matrix.shape[0] == second_matrix.shape[0] and first_matrix.shape[1] == second_matrix.shape[1]);
     std::vector<std::vector<Type>> result = first_matrix.M;
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (long j = 0; j < first_matrix.shape[1]; j++){
             result[i][j] -= second_matrix.M[i][j];
         }
@@ -205,9 +205,9 @@ template <typename Type>
 LinAlg::Matrix<Type> LinAlg::hadamard_product(const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
     assert(first_matrix.shape[0] == second_matrix.shape[0] and first_matrix.shape[1] == second_matrix.shape[1]);
     std::vector<std::vector<Type>> result = first_matrix.M;
-#pragma omp parallel for
+// #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-#pragma omp parallel for
+// #pragma omp parallel for
         for (long j = 0; j < first_matrix.shape[1]; j++){
             result[i][j] *= second_matrix.M[i][j];
         }
@@ -219,9 +219,8 @@ LinAlg::Matrix<Type> LinAlg::hadamard_product(const LinAlg::Matrix<Type> &first_
 template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix, const double &c){
     std::vector<std::vector<Type>> result = first_matrix.M;
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-        #pragma omp parallel for
         for (long j = 0; j < first_matrix.shape[1]; j++){
             result[i][j] *= c;
         }
@@ -233,9 +232,8 @@ LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix
 template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator* (const double &c, const LinAlg::Matrix<Type> &first_matrix){
     std::vector<std::vector<Type>> result = first_matrix.M;
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-        #pragma omp parallel for
         for (long j = 0; j < first_matrix.shape[1]; j++){
             result[i][j] *= c;
         }
@@ -248,11 +246,9 @@ template <typename Type>
 LinAlg::Matrix<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix, const LinAlg::Matrix<Type> &second_matrix){
     assert(first_matrix.shape[1] == second_matrix.shape[0]);
     std::vector<std::vector<Type>> result(first_matrix.shape[0], std::vector<Type> (second_matrix.shape[1], 0));
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-    #pragma omp parallel for
         for (long j = 0; j < second_matrix.shape[1]; j++){
-            #pragma omp parallel for
             for (long k = 0; k < first_matrix.shape[1]; k++){
                 result[i][j] += first_matrix.M[i][k] * second_matrix.M[k][j];
             }
@@ -266,9 +262,8 @@ template <typename Type>
 std::vector<Type> LinAlg::operator* (const LinAlg::Matrix<Type> &first_matrix, const std::vector<Type> &second_matrix){
     assert(first_matrix.shape[1] == second_matrix.size());
     std::vector<Type> result(first_matrix.shape[0]);
-#pragma omp parallel for
+// #pragma omp parallel for
     for (long i = 0; i < first_matrix.shape[0]; i++){
-#pragma omp parallel for
             for (long k = 0; k < first_matrix.shape[1]; k++){
                 result[i] += first_matrix.M[i][k] * second_matrix[k];
             }
@@ -304,9 +299,8 @@ inline std::vector<Type> & LinAlg::Matrix<Type>::operator() (const long &row){
 template <typename Type>
 LinAlg::Matrix<Type> LinAlg::Matrix<Type>::apply_function(Type (*function)(Type)){
     std::vector<std::vector<Type>> result = this->M;
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < this->shape[0]; i++){
-        #pragma omp parallel for
         for (long j = 0; j < this->shape[1]; j++){
             result[i][j] = function(result[i][j]);
         }
@@ -319,9 +313,8 @@ template <typename Type>
 LinAlg::Matrix<Type> LinAlg::Matrix<Type>::reshape(const long &number_of_rows, const long &number_of_cols){
     assert(this->shape[0] * this->shape[1] == number_of_cols * number_of_rows);
     std::vector <std::vector<Type>> result(number_of_rows, std::vector<Type>(number_of_cols));
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (long i = 0; i < number_of_rows; i++){
-        #pragma omp parallel for
         for (long j = 0; j < number_of_cols; j++){
             long k = i * number_of_cols + j;
             long x = k / this->shape[1];
