@@ -17,7 +17,7 @@
 #ifndef DEEPLEARNING_NUMERICAL_ANALYSIS_H
 #define DEEPLEARNING_NUMERICAL_ANALYSIS_H
 
-namespace analysis{
+namespace maths{
     double integrate(double a, double b, int n, double (*func)(double)){
         // a very naive approach to numerically integrate functions
         // the Tanh-Sinh Quadrature algorithm will be implemented later
@@ -31,6 +31,16 @@ namespace analysis{
         }
         val += 0.5 * func(x);
         return val * dx;
+    }
+
+    double differentiate(double (*func)(double), double x){
+        double epsilon = std::numeric_limits<double>::epsilon();
+        double sqrt_epsilon = std::sqrt(epsilon);
+        if (x == 0){
+            return (func(epsilon) - func(-epsilon)) / (2 * epsilon);
+        } else {
+            return (func(x * (1 + sqrt_epsilon)) - func(x * (1 - sqrt_epsilon))) / (2 * x * sqrt_epsilon);
+        }
     }
 };
 

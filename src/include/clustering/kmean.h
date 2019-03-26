@@ -26,8 +26,24 @@
 
 namespace machine_learning{
     namespace clustering{
-        std::vector<std::vector<double>> k_mean_clustering(std::vector<std::vector<double>> points, int k, bool kpp=false){
+        class k_mean_clustering{
+        private:
+            bool fitted = false;
+        public:
+            std::vector<std::vector<double>> points;
+            std::vector<std::vector<double>> centers;
+            std::vector<int> labels;
+            int k;
+            void fit(const int &k, const bool &kpp=false);
+            int predict(const std::vector<double> &point);
 
+            k_mean_clustering(const std::vector<std::vector<double>> &points){
+                this->points = points;
+            };
+        };
+
+        void k_mean_clustering::fit(const int &k, const bool &kpp){
+            this->k = k;
             for (int i = 1; i < points.size(); i++){
                 assert(points[0].size() == points[i].size());
             }
@@ -89,7 +105,23 @@ namespace machine_learning{
                     }
                 }
             }
-            return new_centers;
+            this->centers = new_centers;
+            this->labels = labels;
+            this->fitted = true;
+        }
+
+        int k_mean_clustering::predict(const std::vector<double> &point) {
+            assert(this->fitted);
+            double min_distance = maths::distance(point, this->centers[0]);
+            int label = 0;
+            for (int j = 1; j < this->k; j++) {
+                double temp = maths::distance(point, this->centers[j]);
+                if (temp < min_distance) {
+                    min_distance = temp;
+                    label = j;
+                }
+            }
+            return label;
         }
     }
 }
