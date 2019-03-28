@@ -13,6 +13,7 @@
  */
 
 #include "../src/include/clustering/kmean.h"
+#include "../src/include/clustering/meanshift.h"
 #include <vector>
 #include <iostream>
 #include <random>
@@ -20,7 +21,7 @@
 
 int main(){
 
-    int no_of_points = 10000;
+    int no_of_points = 100;
     int dimension = 2;
     int no_of_cluster = 3;
     int no_of_test_points = 10;
@@ -79,5 +80,17 @@ int main(){
                   << std::endl;
     }
 
+    std::cout << "========================================" << std::endl;
+    machine_learning::clustering::Gaussian_mean_shift cluster2(points, 2);
+    cluster2.fit(0.01, 0.01);
+
+    std::cout << "========================================" << std::endl;
+
+    for (int i = 0; i < no_of_points; i++){
+        std::cout << "(" << points[i][0]
+                  << ", " << points[i][1]
+                  << "): cluster no " << cluster2.get_label(i)
+                  << std::endl;
+    }
     return 0;
 }
