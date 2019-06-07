@@ -13,7 +13,6 @@
  */
 
 #include "../src/include/fnn/sequential.h"
-#include "../src/include/maths/matrix.h"
 #include <vector>
 #include <iostream>
 
@@ -23,9 +22,9 @@ int main(){
 
     NeuralNetwork::Sequential nn;
     nn.add_layer(2);
-    nn.add_layer(4, "sigmoid");
+    nn.add_layer(4, "relu");
     nn.add_layer(1);
-    nn.compile(2000000, 0.3, "squared_error");
+    nn.compile(200000, 0.3, "squared_error");
     nn.summarize();
     nn.fit(TRAINING_SET, LABELS);
     std::vector<double> results = nn.predict(std::vector<double>({0, 0}));

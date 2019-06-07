@@ -93,9 +93,8 @@ namespace machine_learning{
                         }
                     }
                     counter[labels[i]] ++;
-                    old_centers = new_centers;
                 }
-
+                old_centers = new_centers;
                 // reset the centers
                 new_centers = std::vector<std::vector<double>> (k, std::vector<double>(points[0].size(), 0));
                 // choosing new centers
